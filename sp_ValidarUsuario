@@ -1,0 +1,28 @@
+USE `db`;
+DROP procedure IF EXISTS `sp_ValidarUsuario`;
+
+DELIMITER $$
+USE `db`$$
+CREATE PROCEDURE `sp_ValidarUsuario` (IN pEmail VARCHAR(50), 
+									IN pPassword BLOB,
+                                    OUT pMessage VARCHAR(300))
+							
+BEGIN
+IF NOT EXISTS(SELECT Email,Password
+		FROM login
+		WHERE Email = pEmail
+		AND CONVERT(AES_DECRYPT(Password, 'key')using utf8mb4) = pPassword)
+	THEN
+    SET pMessage:= 'Login Incorrecto';
+	ELSE
+		SET pMessage:='Login Correcto';
+ END IF;
+END;$$
+
+DELIMITER ;
+#Este caso el login esta correcto, deberia de mostrar un mensaje'Login Correcto'
+CALL sp_ValidarUsuario ('francogmail.com','&Fran553&',@pMessage);
+SELECT @pMessage;
+#Este caso el login esta incorrecto, deberia de mostrar un mensaje'Login Incorrecto'
+CALL sp_ValidarUsuario ('francogmail.com','553&',@pMessage);
+SELECT @pMessage;
