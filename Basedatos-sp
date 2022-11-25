@@ -1,0 +1,21 @@
+CREATE DATABASE Parcialbd2
+Use Parcialbd2
+CREATE TABLE login (
+	Id Tinyint auto_increment NOT NULL,
+    Email VARCHAR(50) NOT NULL UNIQUE,
+    Password BLOB,
+   
+    primary key(Id)
+) 
+
+CREATE TABLE resetpassword (
+	Id Tinyint auto_increment NOT NULL,
+    Mail VARCHAR(50) NOT NULL ,
+    Pass BLOB,
+   Date DATETIME,
+    primary key(Id),
+    FOREIGN KEY(Mail) REFERENCES Login(Email)
+) 
+SELECT * FROM login
+DELETE from login WHERE Id= 5
+DROP TABLE resetpassword 
