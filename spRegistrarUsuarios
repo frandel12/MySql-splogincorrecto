@@ -1,0 +1,31 @@
+USE `db`;
+DROP procedure IF EXISTS `spRegistrarUsuario`;
+
+DELIMITER $$
+USE `db`$$
+CREATE PROCEDURE `spRegistrarUsuario` (IN pEmail VARCHAR(50), 
+									IN pPassword BLOB,
+                                    OUT pMessage  VARCHAR(300))
+BEGIN
+IF (SELECT REGEXP_LIKE(pPassword, '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$#%&/.,?])[A-Za-z[0-9]$#%&/.,?]{8,}$')!=1) THEN 
+	SET pMessage:= 'Debe contener al menos una mayuscula, un numero y caracteres especiales';
+	
+ELSE
+	INSERT INTO login (Email, 
+					   Password)
+	VALUES (pEmail, 
+			AES_ENCRYPT(pPassword,'key'));
+	SET pMessage:= 'Usario ingresado correctamente';
+	
+	 END IF;
+END;$$
+
+DELIMITER ;
+#Esta consulta es para verificar si se cumple las restricciones si se puede insertar y con este mismo podemo verificar que no deja agregar correo repetidos
+CALL spRegistrarUsuario('francogmail.com','&Fran553&',@pMessage);
+SELECT @pMessage;
+Select * from login;
+#Esta consulta es para verificar si no se cumple las restricciones de la contrasena seria imposible insertar
+CALL spRegistrarUsuario('heygmail.com','hola',@pMessage);
+SELECT @pMessage;
+Select * from login;
